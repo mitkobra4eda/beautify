@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <title>Beautify</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/ae14b36d22.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <style>
+        body{
+            padding-top:75px;
+        }
+    </style>
+
+<nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/home}"><i class="fa fa-solid fa-scissors"></i>&nbsp;Beautify</a>
+        <ul class="navbar-nav align-items-center">
+            <li class="navbar-item dropdown">
+                <a class="nav-link dropdown-toggle" id="dropdownLink" role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${user.firstName}"></a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownLink">
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#accountDetails">Account Details</a></li>
+                    <li><a class="dropdown-item" href="javascript: document.logoutForm.submit()">Sign out</a></li>
+                    <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                        <input hidden="true" type="submit" value="Sign Out"/>
+                    </form>
+                </ul>
+            </li>
+            <li class="navbar-item">
+                <a class="nav-link active" aria-current="saloons" th:href="@{/saloons}">Saloons</a>
+            </li>
+            <li sec:authorize="hasAuthority('Admin')" class="navbar-item">
+                <a class="btn btn-sm btn-outline-success" role="button" th:href="@{/admin/dashboard}">Command Center</a>
+            </li>
+            <li sec:authorize="hasAuthority('Owner')" class="navbar-item">
+                <a class="btn btn-sm btn-outline-success" role="button" th:href="@{/owner/dashboard}">Dashboard</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+    <div class="modal fade" id="accountDetails" tabindex="-1" aria-labelledby="accountDetailsLabel">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="accountDetailsLabel">Account Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center">
+                        <h6 th:text="${user.firstName} + ' ' + ${user.lastName}"></h6>
+                        &nbsp;
+                        <span class="badge bg-secondary" th:text="${user.roles}"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column align-items-center">
+        <h1 th:text="${saloonName}"></h1>
+        <p class="lead"><i class="bi bi-geo-alt"></i><span th:text="${saloonCity}"></span></p>
+        <p class="lead"><i class="bi bi-person"></i><span th:if="${saloonOwner != null}" th:text="${saloonOwner.getFirstName()} + ' ' + ${saloonOwner.getLastName()}"></span>
+        <span th:if="${saloonOwner == null}"> - </span></p>
+        <span class="input mt-2 w-25" role="textbox" style="border:2px; border-style:solid; border-color:#808080; padding:1em; text-align:center;" th:text="${saloonDesc}" readonly></span>
+        <span class="input mt-2 w-25" role="textbox" style="border:2px; border-style:solid; border-color:#808080; padding:1em; text-align:center;" readonly>
+            <tr th:each="serv : ${saloonServices}">
+                <p class="fw-bold" th:text="${serv.name}"></p>
+                <span>Price</span>
+                <p class="fw-light" th:text="${serv.price} + ' ' + BGN"></p>
+            </tr>
+        </span>
+        <button type="button" class="btn btn-success mt-4" data-bs-toggle="modal" data-bs-target="#bookButtonModal">Book Now!</button>
+    </div>
+
+    <div class="modal fade" id="bookButtonModal" tabindex="-1" aria-labelledby="bookButtonLabel">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookButtonLabel">Book now at <span th:text="${saloonName}"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="d-flex mt-3 p-3">
+        <h1 th:text="${saloon}"></h1>
+        <p class="lead"><i class="bi bi-geo-alt"></i><span th:text="${city}"></span></p>
+    </div>
+    <div class="d-flex p-3">
+        <button type="button" class="btn btn-success">Book Now!</button>
+    </div>-->
+
+</body>
+</html>
